@@ -7,6 +7,14 @@ const cors = require('cors');
 const UPSTREAM_URL = 'http://socket.pakraillive.com:3019';
 const PORT = process.env.PORT || 3000;
 
+// Keep Render free tier awake (pings itself every 14 minutes)
+const SELF_URL = process.env.RENDER_EXTERNAL_URL;
+if (SELF_URL) {
+  setInterval(() => {
+    fetch(`${SELF_URL}/health`).catch(() => {});
+  }, 14 * 60 * 1000);
+}
+
 const app = express();
 app.use(cors());
 app.get('/health', (_, res) => res.json({ status: 'ok', upstream: upstreamConnected }));
